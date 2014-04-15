@@ -1,0 +1,148 @@
+<html>
+<head>
+<title>Conductor Udriver</title>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry"></script>
+<style type="text/css">
+#input {
+	width: 200px;
+}
+#messages {
+	float: left;
+	width: 70%;
+	top: 40px;
+	bottom: 8px;
+	left: 5px;
+	right: 5px;
+	border: 1px solid #EEEEEE;
+	padding: 8px;
+}
+#datadriver{
+	width: 25%;
+	float: left;
+}
+</style>
+</head>
+<body>
+
+	<div id="datadriver">
+		<form action="">
+			<label for="nombre">Nombre:</label><input type="text" id="nombre" name="nombre" value="Alejandro"><br/>
+			<label for="placa">Placa:</label><input type="text" id="placa" name="placa" value="cxf778"><br/>
+			<label for="usuario">Usuario:</label><input type="text" id="usuario" name="usuario" value="alejocor"><br/>
+			<label for="imei">imei:</label><input type="text" id="imei" name="imei" value="65654651414sd"><br/>
+			<label for="img">img:</label><input type="text" id="img" name="img" value="alejo.jpg"><br/>
+			<label for="area">area:</label><input type="text" id="area" name="area" value="5p:Bogota"><br/>
+			<input type="button" value="Iniciar" id="iniciar">
+		</form>
+		<div id="ubicacion">
+		<form action="">
+			<label for="latitud">latitud:</label><input type="text" id="latitud" name="latitud" value="4.655182750316357"><br/>
+			<label for="longitud">longitud:</label><input type="text" id="longitud" name="longitud" value="-74.13213659477537"><br/>
+			<div id="serviciosact"></div>
+			<select name="llegadaen" id="llegadaen">
+				<option value="5">5 Minutos</option>
+				<option value="10">10 Minutos</option>
+				<option value="15">15 Minutos</option>
+			</select>
+		</form>
+	</div>
+	<div>
+		<input type="button" id="llegue" value="Informar llegada" name="">
+	</div>
+	<div>
+		<input type="button" id="comenzarfac" value="Comenzar Udimetro" name="">
+	</div>
+	</div>
+	
+	<div id="messages"></div>
+	<script src="http://localhost:4000/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+	var messagesElement = document.getElementById('messages');
+	var lastMessageElement = null;
+	function addMessage(message) {
+		var newMessageElement = document.createElement('div');
+		var newMessageText = document.createTextNode(message);
+		newMessageElement.appendChild(newMessageText);
+		messagesElement.insertBefore(newMessageElement,
+		lastMessageElement);
+		lastMessageElement = newMessageElement;
+	}
+	var socket = io.connect('http://localhost:4000/driver_channel');
+	socket.on('mensajeServidor', function(content) {
+		addMessage(content);
+	});
+	socket.on('identificate', function() {
+
+	});
+	socket.on('nuevoServicio', function(ubicacion) {
+		
+		var p1 = new google.maps.LatLng(ubicacion.latitud,ubicacion.longitud);
+		var p2 = new google.maps.LatLng($("#latitud").val(), $("#longitud").val());
+		addMessage('Un nuevo servicion a '+calcDistance(p1, p2)+' Km');
+		$("#serviciosact").append('<input type="button" value="Tomar servicio" name="tomar" id="'+ubicacion.room+'">');
+		tomarserv();
+		informaLlegada();
+	});
+	$(document).ready(function(){
+		$("#iniciar").click(function(event){
+			console.log('iniciarservicio');
+			var datos = {nombre:$("#nombre").val(),
+				 placa:$("#placa").val(),
+				 usuario:$("#usuario").val(),
+				 imei:$("#imei").val(),
+				 img:$("#img").val(),
+				 area:$("#area").val()
+				};
+	socket.emit('soyConductor', datos);
+	});
+	
+	});
+
+	function tomarserv(){
+		$("input[name='tomar']").click(function(event){
+		
+		console.log("tomando servicio");
+		var id=$(this).attr('id');
+		var datos = {
+				 llegaen:$("#llegadaen").val(),
+				 placa:$("#placa").val(),
+				 imei:$("#imei").val(),
+				 area:$("#area").val(),
+				 room:id
+				};
+	socket.emit('tomarServicio', datos);
+	$("#llegue").attr('name',id);
+	$(this).remove();
+	event.stopPropagation()
+	});
+	}
+	function informaLlegada(){
+		$("#llegue").click(function(event){
+		
+		console.log("informa llegada");
+		var id=$(this).attr('name');
+		var datos = {
+				 placa:$("#placa").val(),
+				 imei:$("#imei").val(),
+				 area:$("#area").val(),
+				 room:id
+				};
+	socket.emit('llegue', datos);
+	event.stopPropagation()
+	});
+	}
+
+
+
+
+//calculates distance between two points in km's
+function calcDistance(p1, p2){
+  return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2) / 1000).toFixed(2);
+}
+
+	
+	
+</script>
+</body>
+</html>

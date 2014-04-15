@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>Cliente Udriver</title>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<style type="text/css">
+#input {
+	width: 200px;
+}
+#messages {
+	float: left;
+	width: 70%;
+	top: 40px;
+	bottom: 8px;
+	left: 5px;
+	right: 5px;
+	border: 1px solid #EEEEEE;
+	padding: 8px;
+}
+#dataconductor{
+	width: 25%;
+	float: left;
+}
+</style>
+</head>
+<body>
+	<div id="dataconductor">
+		<form action="">
+			<label for="nombre">Nombre:</label><input type="text" id="nombre" name="nombre" value="Jhuliette"><br/>
+			<label for="latitud">latitud:</label><input type="text" id="latitud" name="latitud" value="4.656252093854344"><br/>
+			<label for="longitud">longitud:</label><input type="text" id="longitud" name="longitud" value="-74.12866045189207"><br/>
+			<label for="imei">imei:</label><input type="text" id="imei" name="imei" value="542165498265"><br/>
+			<label for="area">area:</label><input type="text" id="area" name="area" value="bta_clientes"><br/>
+			<input type="button" value="Pedir Servicio" id="pedir">
+		</form>
+	</div>
+	<div id="messages"></div>
+	<script src="http://localhost:4000/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+	var messagesElement = document.getElementById('messages');
+	var lastMessageElement = null;
+	function addMessage(message) {
+		var newMessageElement = document.createElement('div');
+		var newMessageText = document.createTextNode(message);
+		newMessageElement.appendChild(newMessageText);
+		messagesElement.insertBefore(newMessageElement,
+		lastMessageElement);
+		lastMessageElement = newMessageElement;
+	}
+	var socket = io.connect('http://localhost:4000/client_channel');
+	socket.on('mensajeServidor', function(content) {
+		addMessage(content);
+	});
+	socket.on('identificate', function() {
+
+	});
+	$(document).ready(function(){
+		$("#pedir").click(function(event){
+			var datos = {nombre:$("#nombre").val(),
+				 latitud:$("#latitud").val(),
+				 longitud:$("#longitud").val(),
+				 imei:$("#imei").val(),
+				 area:$("#area").val()
+				};
+	socket.emit('demeServicio', datos);
+	});
+	
+	});
+	
+	
+</script>
+</body>
+</html>
