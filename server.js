@@ -76,7 +76,7 @@ var DriverChannel = io.of('/driver_channel').authorization(function (handshakeDa
 		});
 	});
 	socket.on('llegue',function(datos){
-	io.of('/client_channel').in(datos.room).emit('mensajeServidor', 'Su servicio a llegado ');
+	io.of('/client_channel').in(datos.room).emit('llegoConductor', 'Su servicio a llegado ');
 
 	});
 		
