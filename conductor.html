@@ -56,7 +56,7 @@
 	</div>
 	
 	<div id="messages"></div>
-	<script src="http://localhost:4000/socket.io/socket.io.js"></script>
+	<script src="http://54.85.75.141/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 	var messagesElement = document.getElementById('messages');
 	var lastMessageElement = null;
@@ -68,7 +68,7 @@
 		lastMessageElement);
 		lastMessageElement = newMessageElement;
 	}
-	var socket = io.connect('http://localhost:4000/driver_channel');
+	var socket = io.connect('http://54.85.75.141/driver_channel');
 	socket.on('mensajeServidor', function(content) {
 		addMessage(content);
 	});

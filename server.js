@@ -3,7 +3,7 @@ var io = require('socket.io').listen(httpd);
 var fs = require('fs');
 var url = require("url");
 var redisPort = 6379;
-var redisHostname = '127.0.0.1';
+var redisHostname = 'redisdrivers.j7dno0.0001.use1.cache.amazonaws.com';
 var redis = require('redis'),
 RedisStore = require('socket.io/lib/stores/redis'),
 pub = redis.createClient(redisPort, redisHostname),
@@ -14,7 +14,7 @@ redisPub : pub,
 redisSub : sub,
 redisClient : client
 }));
-httpd.listen(4000);
+httpd.listen(8080);
 
 //setInterval(checkExpires, 600000  );//ten minute check
 //checkExpires(); //run it once to clear everything out if it is restarting
@@ -71,7 +71,7 @@ var DriverChannel = io.of('/driver_channel').authorization(function (handshakeDa
 			
 		}else{
 
-		io.of('/client_channel').in(datos.room).emit('mensajeServidor', 'Tomaron el servicio '+data);
+		io.of('/client_channel').in(datos.room).emit('mensajeServidor', data);
 		}
 		});
 	});
