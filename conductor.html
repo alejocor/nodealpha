@@ -114,22 +114,21 @@
 	socket.emit('tomarServicio', datos);
 	$("#llegue").attr('name',id);
 	$(this).remove();
-	event.stopPropagation()
+	event.stopPropagation();
 	});
 	}
 	function informaLlegada(){
 		$("#llegue").click(function(event){
-		
 		console.log("informa llegada");
-		var id=$(this).attr('name');
+		var sala=$(this).attr('name');
 		var datos = {
 				 placa:$("#placa").val(),
 				 imei:$("#imei").val(),
 				 area:$("#area").val(),
-				 room:id
+				 room:sala
 				};
 	socket.emit('llegue', datos);
-	event.stopPropagation()
+	event.stopPropagation();
 	});
 	}
 

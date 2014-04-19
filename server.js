@@ -76,6 +76,7 @@ var DriverChannel = io.of('/driver_channel').authorization(function (handshakeDa
 		});
 	});
 	socket.on('llegue',function(datos){
+		console.log(datos);
 	io.of('/client_channel').in(datos.room).emit('llegoConductor', 'Su servicio a llegado ');
 
 	});
@@ -118,7 +119,7 @@ var ClientChannel = io.of("/client_channel").on("connection", function(socket){
 	socket.on('demeServicio', function(datos) {
 		console.log(datos);
 		socket.join("carrera"+socket.id);
-		io.of('/driver_channel').in("activos:5p:Bogota").emit('nuevoServicio', {latitud: datos.latitud, longitud: datos.longitud,room:"carrera"+socket.id});
+		io.of('/driver_channel').in("activos:5p:Bogota").emit('nuevoServicio', {latitud: datos.latitud, longitud: datos.longitud,room:"carrera"+socket.id,direccion:datos.direccion,referencias:datos.referencias});
 	});
 	
 });
